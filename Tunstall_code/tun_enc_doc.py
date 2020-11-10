@@ -44,10 +44,11 @@ def tunstall_encode(alpha, prob, k, N, num_bits, string):
     print("The set of alphabets and codes are: ")
     print("Alphabet\tCode")
     print("-------------------------")
-    for i in range(len(table)-1):
-        print(table[i][0],'\t',table[i][1])
+    # for i in range(len(table)-1):
+    #     print(table[i][0],'\t',table[i][1])
 
-    print("Generated tunstall code for string " + string + " is: " + encoded)
+    # print("Generated tunstall code for string " + string + " is: " + encoded)
+
     return [encoded, table, num_bits], (t2-t1)
 
 def tunstall_decode(result):
@@ -69,8 +70,8 @@ def tunstall_decode(result):
     t2 = time.time()
 
     print("---------------------------------------------------------------")
-    print("Decoded string is:", string)
-    return (t2-t1)
+    # print("Decoded string is:", string)
+    return (t2-t1), string
 
 def main():
 
@@ -85,7 +86,7 @@ def main():
     string = ''
     if len(sys.argv)==3:
         filepath = sys.argv[2]
-        with open(filepath, 'r') as f:
+        with open(filepath, 'r', encoding='latin-1') as f:
             string = f.read()
     else:
         string = input("Enter the string to be encoded: ")
@@ -112,7 +113,10 @@ def main():
         
     k = math.floor(((2 ** num_bits) - N)/ (N - 1))
     result, exec_time = tunstall_encode(alphabet, probability, k, N, num_bits, string)
-
+    
+    with open(f"{filepath}.tunstall", "w") as dest:
+        dest.write(result[0])
+    
     table = result[1]
     bits_table = num_bits*len(result[1])
     for x,_ in table:
@@ -125,7 +129,11 @@ def main():
     print("[+] Compression finished in %.5f seconds"% exec_time )
     print("[+] Compression ratio  %.1f"% ratio )
 
-    exec_time = tunstall_decode(result)
+    exec_time, decoded = tunstall_decode(result)
+    
+    with open(f"{filepath}.tunstalldecoded", "w", encoding='latin-1') as dest:
+        dest.write(decoded)
+
     print("[+] Decompression finished in %.5f seconds"% exec_time )
     
 if __name__ == '__main__':
